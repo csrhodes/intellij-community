@@ -50,15 +50,15 @@ public class GroovyImportOptimizerRefactoringHelper implements RefactoringHelper
         progressIndicator.setIndeterminate(false);
       }
       final int total = files.size();
-      int i = 0;
+      final int[] i = {0};
       for (final GroovyFile file : files) {
-        if (!file.isValid()) continue;
-        final VirtualFile virtualFile = file.getVirtualFile();
-        if (progressIndicator != null) {
-          progressIndicator.setText2(virtualFile.getPresentableUrl());
-          progressIndicator.setFraction((double)i++/total);
-        }
         ApplicationManager.getApplication().runReadAction(() -> {
+          if (!file.isValid()) return;
+          final VirtualFile virtualFile = file.getVirtualFile();
+          if (progressIndicator != null) {
+            progressIndicator.setText2(virtualFile.getPresentableUrl());
+            progressIndicator.setFraction((double)i[0]++ / total);
+          }
           if (ProjectRootManager.getInstance(project).getFileIndex().isInSource(virtualFile)) {
             final Set<GrImportStatement> usedImports = usedImports(file);
             final List<GrImportStatement> validImports = PsiUtil.getValidImportStatements(file);
